@@ -1,0 +1,41 @@
+username: [the_jokistan];
+password: [******];
+
+hashtags: [hindijokes,indianmemes,indianjokes,chutiyapa,bakchodi,indiancomedy];
+hashtags_quantity: [25];
+
+dont_unfollow: [];
+dont_like_contain_hashtags: [];
+dont_comment: [];
+comments: [nice,waah,haha,@the_jokistan,follow us too,followforfollowback,nice post,😄😄😄😄😄😄😄,😄😄,😄,😄😄😄😄,😄😄😄😄😄,😂😂😂😂,😂😂😂,😂,😂😂,🔥🔥🔥,🔥🔥,🔥,❤️❤️,❤️,Awesome!,cool,just incredible];
+
+like_in_hour: [25];
+follow_in_hour: [20];
+comment_in_hour: [15];
+
+like_prob: [0.95];
+follow_prob: [0.7];
+comment_prob: [0.5];
+
+
+like_in_days: [250];
+comment_in_days: [110];
+follow_in_days: [120];
+
+#relation ship
+min_follower:[10];
+max_follower:[2500];
+min_following:[25];
+max_following:[3000];
+min_post:[1];
+relationship_ratio:[0.8];
+
+unfollow_not_follow_back: [48:00:00]
+unfollow_all: [168:00:00];
+randomize:[true];
+
+#upload image
+image_path: [data/images];
+video_path: [data/video];
+igtv_path: [data/igtv];
+caption:[];

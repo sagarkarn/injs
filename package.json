@@ -1,0 +1,19 @@
+{
+  "name": "injs",
+  "version": "1.0.0",
+  "description": "A Instagram Bot developed using instagram private api",
+  "main": "instauto.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "injs"
+  },
+  "keywords": [
+    "instagram",
+    "bot"
+  ],
+  "author": "sagar karn",
+  "license": "MIT"
+}
