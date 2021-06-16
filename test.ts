@@ -1,8 +1,4 @@
-import * as fs from 'fs';
-function choice(li) {
-    return li[
-      Math.floor(Math.random() * li.length)
-    ];
-  }
-let path = choice(fs.readdirSync("data/images"));
-console.log(path);
+let l = [234,342,5,345,85,2,54,87]
+console.log(l.length)
+l.splice(3,1);
+console.log(l.length)

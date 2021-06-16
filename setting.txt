@@ -30,8 +30,8 @@ max_following:[3000];
 min_post:[1];
 relationship_ratio:[0.8];
 
-unfollow_not_follow_back: [48:00:00]
-unfollow_all: [168:00:00];
+unfollow_not_follow_back: [48];
+unfollow_all: [168];
 randomize:[true];
 
 #upload image

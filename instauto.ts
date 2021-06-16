@@ -25,8 +25,8 @@ let dont_unfollow = [];
 let dont_like_contain_hashtags = [];
 let hashtags_quantity = 90;
 let randomize = true;
-let unfollow_not_follow_back = '48:00:00';
-let unfollow_all = "168:00:00";
+let unfollow_not_follow_back = 48;
+let unfollow_all = 168;
 let min_follower = 10;
 let max_follower = 2500;
 let min_following = 10;
@@ -275,35 +275,47 @@ async function follow(userId: number | string) {
   }
 }
 
-async function unfollow(){
+async function unfollow() {
   let unfollowData = await getUnfollowData();
 }
 
 async function getUnfollowData() {
-  let timeList = unfollow_all.split(":");
-  let time = parseInt(timeList[0]) * 60 * 60 * 1000 + parseInt(timeList[1]) * 60 * 1000 + parseInt(timeList[2]) * 1000;
 
-  let r = (parseInt(timeList[0]) -2 ) * 60 * 60 * 1000 + (Math.random() * 240 * 60 * 1000 + 1)
+  let time = (unfollow_not_follow_back - 2) * 60 * 60 * 1000 + (Math.random() * 240 * 60 * 1000 + 1)
   let currentTime = new Date().getTime();
 
   const file = await readFileAsync(`config/${username}/follower.txt`, 'utf-8');
   const dataList = file.split("\n");
 
-    if (dataList.length < 5) {
-      return false;
-    }
-
-    for (let i = 0; i < dataList.length; i++) {
-      if (parseInt(dataList[i].split('=>')[1]) + r >= new Date().getTime()) {
-        let mediaId = dataList[i].split('=>')[0];
-        log("unfollowing " + mediaId);
-        // ig.friendship.destroy(mediaId);
+  if (dataList.length < 1) {
+    return false;
+  }
+  log(dataList)
+  for (let i = 0; i < dataList.length; i++) {
+    if (currentTime - parseInt(dataList[i].split('=>')[1]) > time) {
+      let mediaId = dataList[i].split('=>')[0];
+      log("unfollowing " + mediaId);
+      const r = Math.random();
+      const wait = rand(10000, 25000);
+      await delay(wait);
+      
+      let result = await ig.friendship.destroy(mediaId);
+      if(result){
+        dataList.splice(i,1);
+        i--;
       }
-      else{
-        log("remaining ")
-        log(parseInt(dataList[i].split('=>')[1]) + r - new Date().getTime())
-      }
     }
+    else {
+      log("remaining ")
+      log((currentTime - parseInt(dataList[i].split('=>')[1]) + Math.floor(time))/1000/60)
+    }
+  }
+  let textData = ""
+  for (let i = 0; i < dataList.length; i++){
+    textData += dataList[i];
+    textData += "\n";
+  }
+  fs.writeFileSync(`config/${username}/follower.txt`,textData)
 }
 
 async function getHourData(types) {
@@ -464,10 +476,9 @@ async function postHandler(post) {
         //follow
         let followR;
         followR = await follow(userId);
-
         let unfollowR;
-        unfollowR = await unfollow();
-        
+        // if (Math.random() < 0.2) {
+        // }
         if (followR) {
           saveUser(userId, 'follow');
           console.log(chalk.green('follow done'));
@@ -475,6 +486,9 @@ async function postHandler(post) {
         else {
           console.log(chalk.red("follow"));
         }
+        
+        log("starting task unfollowing")
+        unfollowR = await unfollow();
 
         // if (waitTimeF && waitTime) {
         //   let t = rand(10 * 60 * 1000, 20 * 60 * 1000)
@@ -575,8 +589,8 @@ async function get_setting() {
   relationship_ratio = await getProperty(file, 'relationship_ratio');
 
 
-  unfollow_not_follow_back = await getProperty(file, 'unfollow_not_follow_back');
-  unfollow_all = await getProperty(file, 'unfollow_all');
+  unfollow_not_follow_back = parseInt(await getProperty(file, 'unfollow_not_follow_back'));
+  unfollow_all = parseInt(await getProperty(file, 'unfollow_all'));
   image_path = await getProperty(file, 'image_path');
   video_path = await getProperty(file, 'video_path')
   igtv_path = await getProperty(file, 'igtv_path');
@@ -628,7 +642,10 @@ function timeForUploadPhoto() {
 }
 
 async function uploadPhoto() {
-  let path = choice(fs.readdirSync(image_path));
+  let path:string = choice(fs.readdirSync(image_path));
+  if(path == undefined || path == null){
+    return false;
+  }
   log(chalk.cyan('Image Uploading Started'));
   let result = ig.publish.photo({
     file: await readFileAsync(image_path + "/" + path),
@@ -671,43 +688,43 @@ function timeForUploadStory() {
 }
 
 async function uploadStory() {
-  let path;
-  let root;
-  let imgPath = choice(fs.readdirSync(image_path));
-  let vdoPath = choice(fs.readdirSync(video_path).filter(path => { path.indexOf('.mp4') > -1 }));
+  // let path;
+  // let root;
+  // let imgPath = choice(fs.readdirSync(image_path));
+  // let vdoPath = choice(fs.readdirSync(video_path).filter(path => { path.indexOf('.mp4') > -1 }));
 
-  let r = Math.random();
+  // let r = Math.random();
 
-  if (r > 0.5) {
-    path = image_path + "/" + imgPath;
-    root = imgPath;
-  }
-  else {
-    path = video_path + "/" + vdoPath;
-    root = video_path;
-  }
+  // if (r > 0.5) {
+  //   path = image_path + "/" + imgPath;
+  //   root = imgPath;
+  // }
+  // else {
+  //   path = video_path + "/" + vdoPath;
+  //   root = video_path;
+  // }
 
-  try {
-    let result = ig.publish.story({
-      file: await readFileAsync(path)
-    });
+  // try {
+  //   let result = ig.publish.story({
+  //     file: await readFileAsync(path)
+  //   });
 
-    if (result) {
-      let nextschedule = new Date().getTime() + 90 * 60 * 1000 + Math.floor(Math.random() * 60 * 60 * 1000 + 1)
-      fs.writeFileSync(`config/${username}/schedule_img.txt`, nextschedule.toString());
-      await fs.rm(path, (err) => {
-        if (err) {
-          log(err);
-        }
-        log("story removed");
-      });
-      return true;
-    }
+  //   if (result) {
+  //     let nextschedule = new Date().getTime() + 90 * 60 * 1000 + Math.floor(Math.random() * 60 * 60 * 1000 + 1)
+  //     fs.writeFileSync(`config/${username}/schedule_img.txt`, nextschedule.toString());
+  //     await fs.rm(path, (err) => {
+  //       if (err) {
+  //         log(err);
+  //       }
+  //       log("story removed");
+  //     });
+  //     return true;
+  //   }
 
-  }
-  catch (err) {
+  // }
+  // catch (err) {
 
-  }
+  // }
 }
 
 function timeForUploadVideo() {
@@ -735,12 +752,15 @@ function timeForUploadVideo() {
 }
 
 async function uploadVideo() {
-  let path = choice(fs.readdirSync(video_path).filter(path => { path.indexOf('.mp4') > -1 }));
+  let path : string = choice(fs.readdirSync(video_path).filter(path => { path.indexOf('.mp4') > -1 }));
+  if(path == undefined || path == null){
+    return false;
+  }
   let coverPath;
-  if(path){
+  if (path) {
     coverPath = path.slice(0, path.indexOf(".mp4"));
   }
-  else{
+  else {
     return false;
   }
   try {
@@ -831,7 +851,6 @@ function createInitFolders() {
       }
     });
   }
-  // fs.writeFileSync(`config/${username}/schedule.txt`,"")
 }
 
 

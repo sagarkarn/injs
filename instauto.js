@@ -60,8 +60,8 @@ var dont_unfollow = [];
 var dont_like_contain_hashtags = [];
 var hashtags_quantity = 90;
 var randomize = true;
-var unfollow_not_follow_back = '48:00:00';
-var unfollow_all = "168:00:00";
+var unfollow_not_follow_back = 48;
+var unfollow_all = 168;
 var min_follower = 10;
 var max_follower = 2500;
 var min_following = 10;
@@ -414,32 +414,56 @@ function unfollow() {
 }
 function getUnfollowData() {
     return __awaiter(this, void 0, void 0, function () {
-        var timeList, time, r, currentTime, file, dataList, i, mediaId;
+        var time, currentTime, file, dataList, i, mediaId, r, wait, result, textData, i;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    timeList = unfollow_all.split(":");
-                    time = parseInt(timeList[0]) * 60 * 60 * 1000 + parseInt(timeList[1]) * 60 * 1000 + parseInt(timeList[2]) * 1000;
-                    r = (parseInt(timeList[0]) - 2) * 60 * 60 * 1000 + (Math.random() * 240 * 60 * 1000 + 1);
+                    time = (unfollow_not_follow_back - 2) * 60 * 60 * 1000 + (Math.random() * 240 * 60 * 1000 + 1);
                     currentTime = new Date().getTime();
                     return [4 /*yield*/, readFileAsync("config/" + username + "/follower.txt", 'utf-8')];
                 case 1:
                     file = _a.sent();
                     dataList = file.split("\n");
-                    if (dataList.length < 5) {
+                    if (dataList.length < 1) {
                         return [2 /*return*/, false];
                     }
+                    log(dataList);
+                    i = 0;
+                    _a.label = 2;
+                case 2:
+                    if (!(i < dataList.length)) return [3 /*break*/, 7];
+                    if (!(currentTime - parseInt(dataList[i].split('=>')[1]) > time)) return [3 /*break*/, 5];
+                    mediaId = dataList[i].split('=>')[0];
+                    log("unfollowing " + mediaId);
+                    r = Math.random();
+                    wait = rand(10000, 25000);
+                    return [4 /*yield*/, delay(wait)];
+                case 3:
+                    _a.sent();
+                    return [4 /*yield*/, ig.friendship.destroy(mediaId)];
+                case 4:
+                    result = _a.sent();
+                    if (result) {
+                        dataList.splice(i, 1);
+                        i--;
+                    }
+                    return [3 /*break*/, 6];
+                case 5:
+                    log("remaining ");
+                    log((currentTime - parseInt(dataList[i].split('=>')[1]) + Math.floor(time)) / 1000 / 60);
+                    _a.label = 6;
+                case 6:
+                    i++;
+                    return [3 /*break*/, 2];
+                case 7:
+                    textData = "";
                     for (i = 0; i < dataList.length; i++) {
-                        if (parseInt(dataList[i].split('=>')[1]) + r >= new Date().getTime()) {
-                            mediaId = dataList[i].split('=>')[0];
-                            log("unfollowing " + mediaId);
-                            // ig.friendship.destroy(mediaId);
-                        }
-                        else {
-                            log("remaining ");
-                            log(parseInt(dataList[i].split('=>')[1]) + r - new Date().getTime());
+                        textData += dataList[i];
+                        if (++i < dataList.length) {
+                            textData += "\n";
                         }
                     }
+                    fs.writeFileSync("config/" + username + "/follower.txt", textData);
                     return [2 /*return*/];
             }
         });
@@ -622,9 +646,12 @@ function postHandler(post) {
                 case 9:
                     followR = _a.sent();
                     unfollowR = void 0;
+                    // if (Math.random() < 0.2) {
+                    log("starting task unfollowing");
                     return [4 /*yield*/, unfollow()];
                 case 10:
                     unfollowR = _a.sent();
+                    // }
                     if (followR) {
                         saveUser(userId, 'follow');
                         console.log(chalk.green('follow done'));
@@ -733,102 +760,104 @@ function delay(ms) {
 }
 function get_setting() {
     return __awaiter(this, void 0, void 0, function () {
-        var file, _a;
-        return __generator(this, function (_b) {
-            switch (_b.label) {
+        var file, _a, _b, _c;
+        return __generator(this, function (_d) {
+            switch (_d.label) {
                 case 0: return [4 /*yield*/, fs.readFileSync('setting.txt', "utf-8")];
                 case 1:
-                    file = _b.sent();
+                    file = _d.sent();
                     return [4 /*yield*/, getProperty(file, 'username')];
                 case 2:
-                    username = _b.sent();
+                    username = _d.sent();
                     log('username ' + username);
                     return [4 /*yield*/, getProperty(file, 'password')];
                 case 3:
-                    password = _b.sent();
+                    password = _d.sent();
                     return [4 /*yield*/, getProperty(file, 'like_in_hour')];
                 case 4:
-                    like_in_hour = _b.sent();
+                    like_in_hour = _d.sent();
                     return [4 /*yield*/, getProperty(file, 'comment_in_hour')];
                 case 5:
-                    comment_in_hour = _b.sent();
+                    comment_in_hour = _d.sent();
                     return [4 /*yield*/, getProperty(file, 'follow_in_hour')];
                 case 6:
-                    follow_in_hour = _b.sent();
+                    follow_in_hour = _d.sent();
                     return [4 /*yield*/, getProperty(file, 'like_in_days')];
                 case 7:
-                    like_in_days = _b.sent();
+                    like_in_days = _d.sent();
                     return [4 /*yield*/, getProperty(file, 'comment_in_days')];
                 case 8:
-                    comment_in_days = _b.sent();
+                    comment_in_days = _d.sent();
                     return [4 /*yield*/, getProperty(file, 'follow_in_days')];
                 case 9:
-                    follow_in_days = _b.sent();
+                    follow_in_days = _d.sent();
                     return [4 /*yield*/, getProperty(file, 'like_prob')];
                 case 10:
-                    like_prob = _b.sent();
+                    like_prob = _d.sent();
                     return [4 /*yield*/, getProperty(file, 'follow_prob')];
                 case 11:
-                    follow_prob = _b.sent();
+                    follow_prob = _d.sent();
                     return [4 /*yield*/, getProperty(file, 'comment_prob')];
                 case 12:
-                    comment_prob = _b.sent();
+                    comment_prob = _d.sent();
                     return [4 /*yield*/, getProperty(file, 'hashtags')];
                 case 13:
-                    hashtags = (_b.sent()).split(',');
+                    hashtags = (_d.sent()).split(',');
                     hashtags = shuffle(hashtags);
                     return [4 /*yield*/, getProperty(file, 'comments')];
                 case 14:
-                    comments = (_b.sent()).split(',');
+                    comments = (_d.sent()).split(',');
                     return [4 /*yield*/, getProperty(file, 'dont_unfollow')];
                 case 15:
-                    dont_unfollow = _b.sent();
+                    dont_unfollow = _d.sent();
                     return [4 /*yield*/, getProperty(file, 'dont_like_contain_hashtags')];
                 case 16:
-                    dont_like_contain_hashtags = _b.sent();
+                    dont_like_contain_hashtags = _d.sent();
                     _a = parseInt;
                     return [4 /*yield*/, getProperty(file, 'hashtags_quantity')];
                 case 17:
-                    hashtags_quantity = _a.apply(void 0, [_b.sent()]);
+                    hashtags_quantity = _a.apply(void 0, [_d.sent()]);
                     return [4 /*yield*/, getProperty(file, 'randomize')];
                 case 18:
-                    randomize = _b.sent();
+                    randomize = _d.sent();
                     return [4 /*yield*/, getProperty(file, 'min_follower')];
                 case 19:
-                    min_follower = _b.sent();
+                    min_follower = _d.sent();
                     return [4 /*yield*/, getProperty(file, 'max_follower')];
                 case 20:
-                    max_follower = _b.sent();
+                    max_follower = _d.sent();
                     return [4 /*yield*/, getProperty(file, 'min_following')];
                 case 21:
-                    min_following = _b.sent();
+                    min_following = _d.sent();
                     return [4 /*yield*/, getProperty(file, 'max_following')];
                 case 22:
-                    max_following = _b.sent();
+                    max_following = _d.sent();
                     return [4 /*yield*/, getProperty(file, 'min_post')];
                 case 23:
-                    min_post = _b.sent();
+                    min_post = _d.sent();
                     return [4 /*yield*/, getProperty(file, 'relationship_ratio')];
                 case 24:
-                    relationship_ratio = _b.sent();
+                    relationship_ratio = _d.sent();
+                    _b = parseInt;
                     return [4 /*yield*/, getProperty(file, 'unfollow_not_follow_back')];
                 case 25:
-                    unfollow_not_follow_back = _b.sent();
+                    unfollow_not_follow_back = _b.apply(void 0, [_d.sent()]);
+                    _c = parseInt;
                     return [4 /*yield*/, getProperty(file, 'unfollow_all')];
                 case 26:
-                    unfollow_all = _b.sent();
+                    unfollow_all = _c.apply(void 0, [_d.sent()]);
                     return [4 /*yield*/, getProperty(file, 'image_path')];
                 case 27:
-                    image_path = _b.sent();
+                    image_path = _d.sent();
                     return [4 /*yield*/, getProperty(file, 'video_path')];
                 case 28:
-                    video_path = _b.sent();
+                    video_path = _d.sent();
                     return [4 /*yield*/, getProperty(file, 'igtv_path')];
                 case 29:
-                    igtv_path = _b.sent();
+                    igtv_path = _d.sent();
                     return [4 /*yield*/, getProperty(file, 'caption')];
                 case 30:
-                    caption = _b.sent();
+                    caption = _d.sent();
                     return [2 /*return*/];
             }
         });
@@ -890,6 +919,9 @@ function uploadPhoto() {
             switch (_d.label) {
                 case 0:
                     path = choice(fs.readdirSync(image_path));
+                    if (path == undefined || path == null) {
+                        return [2 /*return*/, false];
+                    }
                     log(chalk.cyan('Image Uploading Started'));
                     _b = (_a = ig.publish).photo;
                     _c = {};
@@ -941,49 +973,8 @@ function timeForUploadStory() {
 }
 function uploadStory() {
     return __awaiter(this, void 0, void 0, function () {
-        var path, root, imgPath, vdoPath, r, result, _a, _b, nextschedule, err_9;
-        var _c;
-        return __generator(this, function (_d) {
-            switch (_d.label) {
-                case 0:
-                    imgPath = choice(fs.readdirSync(image_path));
-                    vdoPath = choice(fs.readdirSync(video_path).filter(function (path) { path.indexOf('.mp4') > -1; }));
-                    r = Math.random();
-                    if (r > 0.5) {
-                        path = image_path + "/" + imgPath;
-                        root = imgPath;
-                    }
-                    else {
-                        path = video_path + "/" + vdoPath;
-                        root = video_path;
-                    }
-                    _d.label = 1;
-                case 1:
-                    _d.trys.push([1, 5, , 6]);
-                    _b = (_a = ig.publish).story;
-                    _c = {};
-                    return [4 /*yield*/, readFileAsync(path)];
-                case 2:
-                    result = _b.apply(_a, [(_c.file = _d.sent(),
-                            _c)]);
-                    if (!result) return [3 /*break*/, 4];
-                    nextschedule = new Date().getTime() + 90 * 60 * 1000 + Math.floor(Math.random() * 60 * 60 * 1000 + 1);
-                    fs.writeFileSync("config/" + username + "/schedule_img.txt", nextschedule.toString());
-                    return [4 /*yield*/, fs.rm(path, function (err) {
-                            if (err) {
-                                log(err);
-                            }
-                            log("story removed");
-                        })];
-                case 3:
-                    _d.sent();
-                    return [2 /*return*/, true];
-                case 4: return [3 /*break*/, 6];
-                case 5:
-                    err_9 = _d.sent();
-                    return [3 /*break*/, 6];
-                case 6: return [2 /*return*/];
-            }
+        return __generator(this, function (_a) {
+            return [2 /*return*/];
         });
     });
 }
@@ -1014,12 +1005,15 @@ function timeForUploadVideo() {
 }
 function uploadVideo() {
     return __awaiter(this, void 0, void 0, function () {
-        var path, coverPath, result, _a, _b, nextschedule, err_10;
+        var path, coverPath, result, _a, _b, nextschedule, err_9;
         var _c;
         return __generator(this, function (_d) {
             switch (_d.label) {
                 case 0:
                     path = choice(fs.readdirSync(video_path).filter(function (path) { path.indexOf('.mp4') > -1; }));
+                    if (path == undefined || path == null) {
+                        return [2 /*return*/, false];
+                    }
                     if (path) {
                         coverPath = path.slice(0, path.indexOf(".mp4"));
                     }
@@ -1053,7 +1047,7 @@ function uploadVideo() {
                     return [2 /*return*/, true];
                 case 5: return [3 /*break*/, 7];
                 case 6:
-                    err_10 = _d.sent();
+                    err_9 = _d.sent();
                     uploadIGTV(path, coverPath);
                     return [3 /*break*/, 7];
                 case 7: return [2 /*return*/];
@@ -1063,7 +1057,7 @@ function uploadVideo() {
 }
 function uploadIGTV(path, coverPath) {
     return __awaiter(this, void 0, void 0, function () {
-        var result, _a, _b, nextschedule, err_11;
+        var result, _a, _b, nextschedule, err_10;
         var _c;
         return __generator(this, function (_d) {
             switch (_d.label) {
@@ -1093,7 +1087,7 @@ function uploadIGTV(path, coverPath) {
                     return [2 /*return*/, true];
                 case 4: return [3 /*break*/, 6];
                 case 5:
-                    err_11 = _d.sent();
+                    err_10 = _d.sent();
                     return [2 /*return*/, false];
                 case 6: return [2 /*return*/];
             }
@@ -1143,5 +1137,4 @@ function createInitFolders() {
     for (var i = 0; i < files.length; i++) {
         _loop_2(i);
     }
-    // fs.writeFileSync(`config/${username}/schedule.txt`,"")
 }

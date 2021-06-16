@@ -1,8 +1,4 @@
-"use strict";
-exports.__esModule = true;
-var fs = require("fs");
-function choice(li) {
-    return li[Math.floor(Math.random() * li.length)];
-}
-var path = choice(fs.readdirSync("data/images"));
-console.log(path);
+var l = [234, 342, 5, 345, 85, 2, 54, 87];
+console.log(l.length);
+l.splice(3, 1);
+console.log(l.length);
