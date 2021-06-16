@@ -433,7 +433,7 @@ function getUnfollowData() {
                         if (parseInt(dataList[i].split('=>')[1]) + r >= new Date().getTime()) {
                             mediaId = dataList[i].split('=>')[0];
                             log("unfollowing " + mediaId);
-                            ig.friendship.destroy(mediaId);
+                            // ig.friendship.destroy(mediaId);
                         }
                         else {
                             log("remaining ");
@@ -1020,7 +1020,12 @@ function uploadVideo() {
             switch (_d.label) {
                 case 0:
                     path = choice(fs.readdirSync(video_path).filter(function (path) { path.indexOf('.mp4') > -1; }));
-                    coverPath = path.slice(0, path.indexOf(".mp4"));
+                    if (path) {
+                        coverPath = path.slice(0, path.indexOf(".mp4"));
+                    }
+                    else {
+                        return [2 /*return*/, false];
+                    }
                     _d.label = 1;
                 case 1:
                     _d.trys.push([1, 6, , 7]);

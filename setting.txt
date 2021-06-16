@@ -1,5 +1,5 @@
 username: [the_jokistan];
-password: [******];
+password: [@India@99050];
 
 hashtags: [hindijokes,indianmemes,indianjokes,chutiyapa,bakchodi,indiancomedy];
 hashtags_quantity: [25];
