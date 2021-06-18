@@ -1,5 +1,5 @@
 # injs
-<b>injs</b> is nodejs programm written in typescript. It is an Instagram Bot for getting more like, followers & upload photos, video, story<br />
+<b>injs</b> is nodejs programe written in typescript. It is an Instagram Bot for getting more like, followers & upload photos, video, story<br />
 injs can be run on any paltform 
 <h2>How to run injs</h2>
 <ul>
