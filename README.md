@@ -6,7 +6,7 @@ injs can be run on any paltform
   <li>Install nodejs & git</li>
   <li>clone git repo
     <br /><code>git clone https://github.com/sagarkarn/injs.git && cd injs</code></li>
-  <li>unzip <b>node_modules.zip<b> in current folder</li>
+  <li>unzip <b>node_modules.zip</b> in current folder</li>
   <li>Edit <code>setting.txt </code> file add your settings</li>
   <li>run on terminal <code>node instauto.js</code></li>
  </ul>
