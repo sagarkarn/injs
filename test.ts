@@ -1,4 +1,4 @@
-let l = [234,342,5,345,85,2,54,87]
-console.log(l.length)
-l.splice(3,1);
-console.log(l.length)
+import * as fs from 'fs'
+
+let path = fs.readdirSync("data/video").filter(path => { return path.includes('mp4')})
+console.log(path)

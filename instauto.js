@@ -414,7 +414,7 @@ function unfollow() {
 }
 function getUnfollowData() {
     return __awaiter(this, void 0, void 0, function () {
-        var time, currentTime, file, dataList, i, mediaId, r, wait, result, textData, i;
+        var time, currentTime, file, dataList, i, mediaId, r, wait, result, user, textData, i;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -427,12 +427,11 @@ function getUnfollowData() {
                     if (dataList.length < 1) {
                         return [2 /*return*/, false];
                     }
-                    log(dataList);
                     i = 0;
                     _a.label = 2;
                 case 2:
-                    if (!(i < dataList.length)) return [3 /*break*/, 7];
-                    if (!(currentTime - parseInt(dataList[i].split('=>')[1]) > time)) return [3 /*break*/, 5];
+                    if (!(i < dataList.length)) return [3 /*break*/, 8];
+                    if (!(currentTime - parseInt(dataList[i].split('=>')[1]) > time)) return [3 /*break*/, 7];
                     mediaId = dataList[i].split('=>')[0];
                     log("unfollowing " + mediaId);
                     r = Math.random();
@@ -443,23 +442,23 @@ function getUnfollowData() {
                     return [4 /*yield*/, ig.friendship.destroy(mediaId)];
                 case 4:
                     result = _a.sent();
-                    if (result) {
-                        dataList.splice(i, 1);
-                        i--;
-                    }
-                    return [3 /*break*/, 6];
+                    if (!result) return [3 /*break*/, 6];
+                    return [4 /*yield*/, ig.user.accountDetails(mediaId)];
                 case 5:
-                    log("remaining ");
-                    log((currentTime - parseInt(dataList[i].split('=>')[1]) + Math.floor(time)) / 1000 / 60);
+                    user = _a.sent();
+                    log(chalk.bgRedBright(user.username + "unfollowed"));
+                    dataList.splice(i, 1);
+                    i--;
                     _a.label = 6;
-                case 6:
+                case 6: return [3 /*break*/, 7];
+                case 7:
                     i++;
                     return [3 /*break*/, 2];
-                case 7:
+                case 8:
                     textData = "";
                     for (i = 0; i < dataList.length; i++) {
                         textData += dataList[i];
-                        if (++i < dataList.length) {
+                        if (dataList[i] != "") {
                             textData += "\n";
                         }
                     }
@@ -647,10 +646,6 @@ function postHandler(post) {
                     followR = _a.sent();
                     unfollowR = void 0;
                     // if (Math.random() < 0.2) {
-                    log("starting task unfollowing");
-                    return [4 /*yield*/, unfollow()];
-                case 10:
-                    unfollowR = _a.sent();
                     // }
                     if (followR) {
                         saveUser(userId, 'follow');
@@ -659,6 +654,10 @@ function postHandler(post) {
                     else {
                         console.log(chalk.red("follow"));
                     }
+                    log("starting task unfollowing");
+                    return [4 /*yield*/, unfollow()];
+                case 10:
+                    unfollowR = _a.sent();
                     return [3 /*break*/, 12];
                 case 11:
                     err_8 = _a.sent();
@@ -673,23 +672,29 @@ function postHandler(post) {
                     log('follower or followig is higher than max ' + chalk.yellow(' skiping...'));
                     _a.label = 16;
                 case 16:
-                    if (image_path.length > 1) {
-                        if (timeForUploadPhoto()) {
-                            log('timeForUploadPhoto');
-                            uploadPhoto();
-                        }
-                        if (timeForUploadStory()) {
-                            log('timeForUploadstory');
-                            uploadStory();
-                        }
-                    }
-                    if (video_path.length > 1) {
-                        if (timeForUploadVideo()) {
-                            log('timeForUploadvideo');
-                            uploadVideo();
-                        }
-                    }
-                    return [2 /*return*/];
+                    if (!(image_path.length > 1)) return [3 /*break*/, 20];
+                    if (!timeForUploadPhoto()) return [3 /*break*/, 18];
+                    log('timeForUploadPhoto');
+                    return [4 /*yield*/, uploadPhoto()];
+                case 17:
+                    _a.sent();
+                    _a.label = 18;
+                case 18:
+                    if (!timeForUploadStory()) return [3 /*break*/, 20];
+                    log('timeForUploadstory');
+                    return [4 /*yield*/, uploadStory()];
+                case 19:
+                    _a.sent();
+                    _a.label = 20;
+                case 20:
+                    if (!(video_path.length > 1)) return [3 /*break*/, 22];
+                    if (!timeForUploadVideo()) return [3 /*break*/, 22];
+                    log('timeForUploadvideo');
+                    return [4 /*yield*/, uploadVideo()];
+                case 21:
+                    _a.sent();
+                    _a.label = 22;
+                case 22: return [2 /*return*/];
             }
         });
     });
@@ -879,7 +884,7 @@ function getProperty(file, property) {
 }
 function shuffle(li) {
     for (var i = li.length - 1; i > 0; i--) {
-        var j = Math.floor(Math.random() * (i + 1));
+        var j = Math.floor(Math.random() * (li.length));
         var temp = li[i];
         li[i] = li[j];
         li[j] = temp;
@@ -1010,19 +1015,21 @@ function uploadVideo() {
         return __generator(this, function (_d) {
             switch (_d.label) {
                 case 0:
-                    path = choice(fs.readdirSync(video_path).filter(function (path) { path.indexOf('.mp4') > -1; }));
+                    path = choice(fs.readdirSync(video_path).filter(function (path) { return path.includes('.mp4'); }));
                     if (path == undefined || path == null) {
+                        log('path undefine');
                         return [2 /*return*/, false];
                     }
                     if (path) {
                         coverPath = path.slice(0, path.indexOf(".mp4"));
                     }
                     else {
+                        log('path false');
                         return [2 /*return*/, false];
                     }
                     _d.label = 1;
                 case 1:
-                    _d.trys.push([1, 6, , 7]);
+                    _d.trys.push([1, 6, , 8]);
                     _b = (_a = ig.publish).video;
                     _c = {};
                     return [4 /*yield*/, readFileAsync(video_path + "/" + path)];
@@ -1045,12 +1052,14 @@ function uploadVideo() {
                 case 4:
                     _d.sent();
                     return [2 /*return*/, true];
-                case 5: return [3 /*break*/, 7];
+                case 5: return [3 /*break*/, 8];
                 case 6:
                     err_9 = _d.sent();
-                    uploadIGTV(path, coverPath);
-                    return [3 /*break*/, 7];
-                case 7: return [2 /*return*/];
+                    return [4 /*yield*/, uploadIGTV(path, coverPath)];
+                case 7:
+                    _d.sent();
+                    return [3 /*break*/, 8];
+                case 8: return [2 /*return*/];
             }
         });
     });
@@ -1065,10 +1074,10 @@ function uploadIGTV(path, coverPath) {
                     _d.trys.push([0, 5, , 6]);
                     _b = (_a = ig.publish).igtvVideo;
                     _c = {};
-                    return [4 /*yield*/, readFileAsync(video_path + "\n" + path)];
+                    return [4 /*yield*/, readFileAsync(video_path + "\\" + path)];
                 case 1:
                     _c.video = _d.sent();
-                    return [4 /*yield*/, readFileAsync(video_path + "\n" + path)];
+                    return [4 /*yield*/, readFileAsync(video_path + "\\" + path)];
                 case 2:
                     result = _b.apply(_a, [(_c.coverFrame = _d.sent(),
                             _c.title = "",
@@ -1088,6 +1097,7 @@ function uploadIGTV(path, coverPath) {
                 case 4: return [3 /*break*/, 6];
                 case 5:
                     err_10 = _d.sent();
+                    log(err_10);
                     return [2 /*return*/, false];
                 case 6: return [2 /*return*/];
             }

@@ -290,7 +290,6 @@ async function getUnfollowData() {
   if (dataList.length < 1) {
     return false;
   }
-  log(dataList)
   for (let i = 0; i < dataList.length; i++) {
     if (currentTime - parseInt(dataList[i].split('=>')[1]) > time) {
       let mediaId = dataList[i].split('=>')[0];
@@ -301,19 +300,24 @@ async function getUnfollowData() {
       
       let result = await ig.friendship.destroy(mediaId);
       if(result){
+        let user = await ig.user.accountDetails(mediaId)
+        log(chalk.bgRedBright(user.username + "unfollowed"))
         dataList.splice(i,1);
         i--;
       }
     }
     else {
-      log("remaining ")
-      log((currentTime - parseInt(dataList[i].split('=>')[1]) + Math.floor(time))/1000/60)
+
+      // log("remaining ")
+      // log((currentTime - parseInt(dataList[i].split('=>')[1]) + Math.floor(time))/1000/60)
     }
   }
   let textData = ""
   for (let i = 0; i < dataList.length; i++){
     textData += dataList[i];
-    textData += "\n";
+    if(dataList[i] != ""){
+      textData += "\n";
+    }
   }
   fs.writeFileSync(`config/${username}/follower.txt`,textData)
 }
@@ -486,7 +490,7 @@ async function postHandler(post) {
         else {
           console.log(chalk.red("follow"));
         }
-        
+
         log("starting task unfollowing")
         unfollowR = await unfollow();
 
@@ -512,17 +516,17 @@ async function postHandler(post) {
   if (image_path.length > 1) {
     if (timeForUploadPhoto()) {
       log('timeForUploadPhoto')
-      uploadPhoto()
+      await uploadPhoto()
     }
     if (timeForUploadStory()) {
       log('timeForUploadstory')
-      uploadStory()
+      await uploadStory()
     }
   }
   if (video_path.length > 1) {
     if (timeForUploadVideo()) {
       log('timeForUploadvideo')
-      uploadVideo()
+      await uploadVideo()
     }
   }
 
@@ -609,7 +613,7 @@ async function getProperty(file, property) {
 
 function shuffle(li) {
   for (let i = li.length - 1; i > 0; i--) {
-    let j = Math.floor(Math.random() * (i + 1));
+    let j = Math.floor(Math.random() * (li.length));
     let temp = li[i];
     li[i] = li[j];
     li[j] = temp;
@@ -752,8 +756,10 @@ function timeForUploadVideo() {
 }
 
 async function uploadVideo() {
-  let path : string = choice(fs.readdirSync(video_path).filter(path => { path.indexOf('.mp4') > -1 }));
+  let path = choice(
+    fs.readdirSync(video_path).filter(path => { return path.includes('.mp4') }));
   if(path == undefined || path == null){
+    log('path undefine')
     return false;
   }
   let coverPath;
@@ -761,6 +767,7 @@ async function uploadVideo() {
     coverPath = path.slice(0, path.indexOf(".mp4"));
   }
   else {
+    log('path false')
     return false;
   }
   try {
@@ -782,16 +789,16 @@ async function uploadVideo() {
     }
   }
   catch (err) {
-    uploadIGTV(path, coverPath);
+    await uploadIGTV(path, coverPath);
   }
 }
 
-async function uploadIGTV(path, coverPath) {
+async function uploadIGTV(path : string, coverPath: string) {
 
   try {
     let result = ig.publish.igtvVideo({
-      video: await readFileAsync(video_path + "\n" + path),
-      coverFrame: await readFileAsync(video_path + "\n" + path),
+      video: await readFileAsync(video_path + "\\" + path),
+      coverFrame: await readFileAsync(video_path + "\\" + path),
       title: "",
     });
 
@@ -809,6 +816,7 @@ async function uploadIGTV(path, coverPath) {
 
   }
   catch (err) {
+    log(err)
     return false;
   }
 }
@@ -852,5 +860,3 @@ function createInitFolders() {
     });
   }
 }
-
-

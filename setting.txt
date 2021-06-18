@@ -1,23 +1,32 @@
 username: [the_jokistan];
 password: [@India@99050];
 
+#seperate using comma
 hashtags: [hindijokes,indianmemes,indianjokes,chutiyapa,bakchodi,indiancomedy];
+#number
 hashtags_quantity: [25];
 
+#In progress
 dont_unfollow: [];
 dont_like_contain_hashtags: [];
 dont_comment: [];
+
+#seperate using comma
 comments: [nice,waah,haha,@the_jokistan,follow us too,followforfollowback,nice post,😄😄😄😄😄😄😄,😄😄,😄,😄😄😄😄,😄😄😄😄😄,😂😂😂😂,😂😂😂,😂,😂😂,🔥🔥🔥,🔥🔥,🔥,❤️❤️,❤️,Awesome!,cool,just incredible];
 
+#number
 like_in_hour: [25];
 follow_in_hour: [20];
 comment_in_hour: [15];
 
+#In progress
 like_prob: [0.95];
+#number
 follow_prob: [0.7];
+#number
 comment_prob: [0.5];
 
-
+#number
 like_in_days: [250];
 comment_in_days: [110];
 follow_in_days: [120];
@@ -30,12 +39,40 @@ max_following:[3000];
 min_post:[1];
 relationship_ratio:[0.8];
 
+#hour
 unfollow_not_follow_back: [48];
 unfollow_all: [168];
+#In progress
 randomize:[true];
 
-#upload image
+#upload post path
 image_path: [data/images];
 video_path: [data/video];
 igtv_path: [data/igtv];
-caption:[];
+
+#caption
+caption:[[follow us @the_jokistan ]
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+_____________________________
+Follow us @the_jokistan
+Follow us @the_jokistan
+Follow us @the_jokistan
+Follow us @the_jokistan
+_____________________________
+.
+.
+.
+.
+#backbencher #bakchodiyaan #desisarcasm #pkmkb #photography #laughingmemes #carryminati #bollywood #bhuvanbam #follow #instagood #nibbi #studentmemes #fashion #adultmemes #trendingnow #model #like #justlaugh];
