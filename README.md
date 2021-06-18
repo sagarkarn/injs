@@ -5,5 +5,7 @@ injs can be run on any paltform
 <ul>
   <li>Install nodejs & git</li>
   <li>clone git repo
-    <br /><code>git clone </code></li>
+    <br /><code>git clone https://github.com/sagarkarn/injs.git && cd injs</code></li>
+  <li>
+  <li><code>npm install instagram-private-api</code></li>
  </ul>
