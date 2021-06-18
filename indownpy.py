@@ -32,11 +32,7 @@ os.rmdir('sortcode')
 
 
 
-
-
-# profile = instaloader.Profile.from_username(L.context,'comedy_videos789').userid
-
-# stories = L.get_stories([profile])
+ # stories = L.get_stories([profile])
 # print('i am after stories',str(stories))
 # for story in stories:
 #     print('i am in loop after stories')
